@@ -1,5 +1,6 @@
 import { effect } from '../effect';
 import { reactive } from '../reactive';
+
 describe('effect', () => {
   it('happy path', () => {
     const user = reactive({
@@ -28,5 +29,35 @@ describe('effect', () => {
     const r = runner();
     expect(foo).toBe(12);
     expect(r).toBe('foo');
+  });
+
+  it('scheduler', () => {
+    // 1. 通过 effect 的第二个参数给定的一个 scheduler
+    // 2. 当 effect 第一次执行时还会执行第一个参数 fn
+    // 3. 当响应式对象发生属性改变时，不会执行第一个参数 fn，而是执行第二个参数 scheduler
+    // 4. 当执行 runner 时，会再次执行 fn
+
+    let dummy;
+    let run;
+    const scheduler = jest.fn(() => {
+      run = runner;
+    });
+    const obj = reactive({ foo: 1 });
+    const runner = effect(
+      () => {
+        dummy = obj.foo;
+      },
+      {
+        scheduler,
+      },
+    );
+
+    expect(scheduler).not.toHaveBeenCalled();
+    expect(dummy).toBe(1);
+    obj.foo++;
+    expect(scheduler).toHaveBeenCalledTimes(1);
+    expect(dummy).toBe(1);
+    run();
+    expect(dummy).toBe(2);
   });
 });

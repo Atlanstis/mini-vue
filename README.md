@@ -1,3 +1,3 @@
 # Mini Vue
 
-实现 effect 返回 runner。
+实现 effect 的 scheduler 功能。
