@@ -1,3 +1,3 @@
 # Mini Vue
 
-实现 effect 的 stop 功能。
+实现 isReactive 和 isReadonly。
