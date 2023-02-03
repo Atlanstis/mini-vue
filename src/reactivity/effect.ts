@@ -1,5 +1,6 @@
 import { extend } from '../shared/index';
 let activeEffect;
+let shouldTrack = false;
 
 class ReactiveEffect {
   private _fn;
@@ -12,8 +13,14 @@ class ReactiveEffect {
   }
 
   run() {
+    if (!this.active) {
+      return this._fn();
+    }
+    shouldTrack = true;
     activeEffect = this;
-    return this._fn();
+    const result = this._fn();
+    shouldTrack = false;
+    return result;
   }
 
   stop() {
@@ -31,6 +38,7 @@ function cleanupEffect(effect) {
   effect.deps.forEach((dep) => {
     dep.delete(effect);
   });
+  effect.deps.length = 0;
 }
 
 export function effect(fn, options: any = {}) {
@@ -54,7 +62,7 @@ const targetMap = new Map();
  * @param key 属性名
  */
 export function track(target, key) {
-  if (!activeEffect) return;
+  if (!isTracking()) return;
   let depsMap = targetMap.get(target);
   if (!depsMap) {
     targetMap.set(target, (depsMap = new Map()));
@@ -63,8 +71,13 @@ export function track(target, key) {
   if (!dep) {
     depsMap.set(key, (dep = new Set()));
   }
+  if (dep.has(activeEffect)) return;
   dep.add(activeEffect);
   activeEffect.deps.push(dep);
+}
+
+function isTracking() {
+  return shouldTrack && activeEffect !== undefined;
 }
 
 /**
