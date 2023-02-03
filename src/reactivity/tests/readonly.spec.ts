@@ -1,4 +1,4 @@
-import { readonly } from '../reactive';
+import { readonly, isReadonly } from '../reactive';
 
 describe('readonly', () => {
   it('happy path', () => {
@@ -19,5 +19,13 @@ describe('readonly', () => {
 
     expect(console.warn).toBeCalledTimes(1);
     expect(user.age).toBe(10);
+  });
+
+  it('isReadonly', () => {
+    const original = { foo: 1 };
+    const wrapped = readonly(original);
+
+    expect(isReadonly(wrapped)).toBe(true);
+    expect(isReadonly(original)).toBe(false);
   });
 });
