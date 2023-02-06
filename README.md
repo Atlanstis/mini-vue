@@ -1,3 +1,3 @@
 # Mini Vue
 
-实现 isProxy 功能。
+实现 实现 ref 功能。
