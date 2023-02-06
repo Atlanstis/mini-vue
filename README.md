@@ -1,3 +1,3 @@
 # Mini Vue
 
-优化 stop 功能，修复 ++ 操作继续进行依赖收集的问题。
+实现 reactive 和 readonly 嵌套对象转换功能。
